@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NeuralChat — Local AI Interface</title>
+
+  <!--
+    FONT PAIRING RATIONALE:
+    ┌─────────────────────────────────────────────────────┐
+    │  Cormorant Garamond  →  Brand / Display (elegant    │
+    │                         editorial serif, timeless)  │
+    │  Outfit              →  UI Body (geometric, clean,  │
+    │                         warm — not Inter/Roboto)    │
+    │  Fira Code           →  Chat text / Code (readable  │
+    │                         mono with personality)      │
+    └─────────────────────────────────────────────────────┘
+  -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&family=Fira+Code:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ============================================================
+       WATERMARK BACKGROUND
+       Soft AI-themed SVG illustrations — 5–7% opacity, blurred.
+       Pure decoration. Zero impact on readability.
+       ============================================================ -->
+  <div class="watermark-layer" aria-hidden="true">
+
+    <!-- 1. Neural brain / mind map -->
+    <div class="wm-icon wm-icon--brain">
+      <svg width="180" height="180" viewBox="0 0 180 180" fill="none">
+        <!-- Brain outline (simplified) -->
+        <path d="M90 30 C60 30 35 50 35 80 C35 95 42 108 52 117 C48 122 46 130 50 137 C55 145 65 148 74 144 C78 152 83 158 90 160 C97 158 102 152 106 144 C115 148 125 145 130 137 C134 130 132 122 128 117 C138 108 145 95 145 80 C145 50 120 30 90 30Z" stroke="currentColor" stroke-width="2" fill="none"/>
+        <!-- Neural connections inside -->
+        <circle cx="90" cy="80" r="5" fill="currentColor" opacity="0.6"/>
+        <circle cx="68" cy="70" r="4" fill="currentColor" opacity="0.5"/>
+        <circle cx="112" cy="70" r="4" fill="currentColor" opacity="0.5"/>
+        <circle cx="75" cy="100" r="3" fill="currentColor" opacity="0.4"/>
+        <circle cx="105" cy="100" r="3" fill="currentColor" opacity="0.4"/>
+        <circle cx="90" cy="115" r="3" fill="currentColor" opacity="0.4"/>
+        <line x1="90" y1="80" x2="68" y2="70"  stroke="currentColor" stroke-width="1.2"/>
+        <line x1="90" y1="80" x2="112" y2="70" stroke="currentColor" stroke-width="1.2"/>
+        <line x1="90" y1="80" x2="75" y2="100" stroke="currentColor" stroke-width="1.2"/>
+        <line x1="90" y1="80" x2="105" y2="100" stroke="currentColor" stroke-width="1.2"/>
+        <line x1="90" y1="80" x2="90" y2="115" stroke="currentColor" stroke-width="1.2"/>
+        <line x1="68" y1="70" x2="75" y2="100" stroke="currentColor" stroke-width="0.8" opacity="0.5"/>
+        <line x1="112" y1="70" x2="105" y2="100" stroke="currentColor" stroke-width="0.8" opacity="0.5"/>
+        <line x1="75" y1="100" x2="90" y2="115" stroke="currentColor" stroke-width="0.8" opacity="0.5"/>
+        <line x1="105" y1="100" x2="90" y2="115" stroke="currentColor" stroke-width="0.8" opacity="0.5"/>
+      </svg>
+    </div>
+
+    <!-- 2. Search / magnifier with sparkle -->
+    <div class="wm-icon wm-icon--search">
+      <svg width="140" height="140" viewBox="0 0 140 140" fill="none">
+        <circle cx="60" cy="60" r="34" stroke="currentColor" stroke-width="2.5"/>
+        <line x1="85" y1="85" x2="118" y2="118" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+        <!-- sparkle stars -->
+        <path d="M40 30 L42 26 L44 30 L48 32 L44 34 L42 38 L40 34 L36 32Z" fill="currentColor" opacity="0.5"/>
+        <path d="M85 25 L86.5 22 L88 25 L91 26.5 L88 28 L86.5 31 L85 28 L82 26.5Z" fill="currentColor" opacity="0.4"/>
+      </svg>
+    </div>
+
+    <!-- 3. Circuit board / chip -->
+    <div class="wm-icon wm-icon--circuit">
+      <svg width="160" height="160" viewBox="0 0 160 160" fill="none">
+        <!-- Chip body -->
+        <rect x="50" y="50" width="60" height="60" rx="6" stroke="currentColor" stroke-width="2"/>
+        <!-- Inner grid -->
+        <rect x="62" y="62" width="36" height="36" rx="3" stroke="currentColor" stroke-width="1.2"/>
+        <!-- Pins left -->
+        <line x1="30" y1="65" x2="50" y2="65" stroke="currentColor" stroke-width="1.5"/>
+        <line x1="30" y1="80" x2="50" y2="80" stroke="currentColor" stroke-width="1.5"/>
+        <line x1="30" y1="95" x2="50" y2="95" stroke="currentColor" stroke-width="1.5"/>
+        <!-- Pins right -->
+        <line x1="110" y1="65" x2="130" y2="65" stroke="currentColor" stroke-width="1.5"/>
+        <line x1="110" y1="80" x2="130" y2="80" stroke="currentColor" stroke-width="1.5"/>
+        <line x1="110" y1="95" x2="130" y2="95" stroke="currentColor" stroke-width="1.5"/>
+        <!-- Pins top -->
+        <line x1="65" y1="30" x2="65" y2="50" stroke="currentColor" stroke-width="1.5"/>
+        <line x1="80" y1="30" x2="80" y2="50" stroke="currentColor" stroke-width="1.5"/>
+        <line x1="95" y1="30" x2="95" y2="50" stroke="currentColor" stroke-width="1.5"/>
+        <!-- Pins bottom -->
+        <line x1="65" y1="110" x2="65" y2="130" stroke="currentColor" stroke-width="1.5"/>
+        <line x1="80" y1="110" x2="80" y2="130" stroke="currentColor" stroke-width="1.5"/>
+        <line x1="95" y1="110" x2="95" y2="130" stroke="currentColor" stroke-width="1.5"/>
+        <!-- Pin dots -->
+        <circle cx="30" cy="65" r="3" fill="currentColor"/>
+        <circle cx="30" cy="80" r="3" fill="currentColor"/>
+        <circle cx="30" cy="95" r="3" fill="currentColor"/>
+        <circle cx="130" cy="65" r="3" fill="currentColor"/>
+        <circle cx="130" cy="80" r="3" fill="currentColor"/>
+        <circle cx="130" cy="95" r="3" fill="currentColor"/>
+      </svg>
+    </div>
+
+    <!-- 4. Speech bubbles (conversation) -->
+    <div class="wm-icon wm-icon--chat">
+      <svg width="160" height="130" viewBox="0 0 160 130" fill="none">
+        <!-- Main bubble -->
+        <rect x="10" y="10" width="100" height="65" rx="16" stroke="currentColor" stroke-width="2"/>
+        <path d="M25 75 L15 95 L45 75Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" fill="none"/>
+        <!-- Lines inside bubble (text simulation) -->
+        <line x1="28" y1="32" x2="92" y2="32" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="28" y1="44" x2="80" y2="44" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="28" y1="56" x2="86" y2="56" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <!-- Secondary bubble -->
+        <rect x="50" y="55" width="100" height="55" rx="16" stroke="currentColor" stroke-width="1.5" opacity="0.6"/>
+        <path d="M135 110 L148 126 L118 110Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" fill="none" opacity="0.6"/>
+        <line x1="66" y1="72" x2="132" y2="72" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity="0.6"/>
+        <line x1="66" y1="84" x2="116" y2="84" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" opacity="0.6"/>
+      </svg>
+    </div>
+
+    <!-- 5. Infinity / AI loop symbol -->
+    <div class="wm-icon wm-icon--infinity">
+      <svg width="180" height="90" viewBox="0 0 180 90" fill="none">
+        <path d="M90 45 C90 25 70 10 50 10 C25 10 10 28 10 45 C10 62 25 80 50 80 C70 80 80 68 90 45 C100 22 110 10 130 10 C155 10 170 28 170 45 C170 62 155 80 130 80 C110 80 90 65 90 45Z" stroke="currentColor" stroke-width="2.5" fill="none"/>
+        <circle cx="45" cy="45" r="6" fill="currentColor" opacity="0.5"/>
+        <circle cx="135" cy="45" r="6" fill="currentColor" opacity="0.5"/>
+        <circle cx="90" cy="45" r="4" fill="currentColor" opacity="0.7"/>
+      </svg>
+    </div>
+
+    <!-- 6. Document / text file -->
+    <div class="wm-icon wm-icon--doc">
+      <svg width="110" height="140" viewBox="0 0 110 140" fill="none">
+        <path d="M15 10 H70 L95 35 V130 H15 Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M70 10 V35 H95" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+        <line x1="28" y1="55" x2="82" y2="55" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="28" y1="68" x2="82" y2="68" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="28" y1="81" x2="82" y2="81" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="28" y1="94" x2="65" y2="94" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="28" y1="107" x2="72" y2="107" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+
+    <!-- 7. Stars / sparkle cluster -->
+    <div class="wm-icon wm-icon--stars">
+      <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
+        <path d="M60 10 L64 46 L100 42 L70 64 L82 98 L60 78 L38 98 L50 64 L20 42 L56 46Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" fill="none"/>
+        <circle cx="105" cy="20" r="4" fill="currentColor" opacity="0.4"/>
+        <circle cx="15"  cy="15" r="3" fill="currentColor" opacity="0.35"/>
+        <circle cx="108" cy="95" r="5" fill="currentColor" opacity="0.3"/>
+        <path d="M95 50 L97 44 L99 50 L105 52 L99 54 L97 60 L95 54 L89 52Z" fill="currentColor" opacity="0.5"/>
+      </svg>
+    </div>
+
+  </div><!-- /watermark-layer -->
+
+
+  <!-- ============================================================
+       APP SHELL
+       ============================================================ -->
+  <div class="app-shell">
+
+    <!-- ── SIDEBAR ── -->
+    <aside class="sidebar" id="sidebar">
+
+      <div class="sidebar__brand">
+        <div class="brand-icon" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 28 28" fill="none">
+            <circle cx="14" cy="4"  r="3" fill="var(--accent)"/>
+            <circle cx="4"  cy="20" r="3" fill="var(--accent)"/>
+            <circle cx="24" cy="20" r="3" fill="var(--accent)"/>
+            <circle cx="14" cy="14" r="4" fill="var(--accent)" opacity="0.3"/>
+            <line x1="14" y1="7"  x2="14" y2="10" stroke="var(--accent)" stroke-width="1.5"/>
+            <line x1="14" y1="18" x2="4"  y2="17" stroke="var(--accent)" stroke-width="1.5"/>
+            <line x1="14" y1="18" x2="24" y2="17" stroke="var(--accent)" stroke-width="1.5"/>
+            <line x1="14" y1="10" x2="6"  y2="17" stroke="var(--accent)" stroke-width="1" opacity="0.5"/>
+            <line x1="14" y1="10" x2="22" y2="17" stroke="var(--accent)" stroke-width="1" opacity="0.5"/>
+          </svg>
+        </div>
+        <span class="brand-name">NeuralChat</span>
+      </div>
+
+      <button class="btn-new-chat" id="btnNewChat" title="Start a new conversation">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+          <path d="M8 1v14M1 8h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+        New Chat
+      </button>
+
+      <nav class="sidebar__history" aria-label="Chat history">
+        <p class="sidebar__history-label">Recent</p>
+        <ul class="history-list" id="historyList"></ul>
+      </nav>
+
+      <div class="sidebar__footer">
+        <div class="model-badge">
+          <span class="model-badge__dot"></span>
+          <span class="model-badge__label" id="modelLabel">Local Model · Ready</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ── MAIN CHAT ── -->
+    <main class="chat-main">
+
+      <header class="chat-header">
+        <button class="btn-sidebar-toggle" id="btnSidebarToggle" aria-label="Toggle sidebar" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+        <div class="chat-header__title">
+          <h1 id="chatTitle">New Conversation</h1>
+        </div>
+        <div class="status-pill" id="statusPill">
+          <span class="status-pill__dot"></span>
+          <span class="status-pill__text">Ready</span>
+        </div>
+      </header>
+
+      <!-- Feed -->
+      <section class="chat-feed" id="chatFeed" role="log" aria-live="polite" aria-label="Chat messages">
+        <div class="empty-state" id="emptyState">
+          <div class="empty-state__icon" aria-hidden="true">
+            <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+              <circle cx="32" cy="32" r="30" stroke="var(--accent)" stroke-width="1.2" opacity="0.25"/>
+              <circle cx="32" cy="32" r="21" stroke="var(--accent)" stroke-width="1" opacity="0.12"/>
+              <circle cx="32" cy="10" r="5"  fill="var(--accent)" opacity="0.6"/>
+              <circle cx="12" cy="44" r="5"  fill="var(--accent)" opacity="0.45"/>
+              <circle cx="52" cy="44" r="5"  fill="var(--accent)" opacity="0.45"/>
+              <circle cx="32" cy="32" r="6"  fill="var(--accent)" opacity="0.9"/>
+              <line x1="32" y1="15" x2="32" y2="26" stroke="var(--accent)" stroke-width="1.8" opacity="0.45"/>
+              <line x1="32" y1="38" x2="16" y2="41" stroke="var(--accent)" stroke-width="1.8" opacity="0.3"/>
+              <line x1="32" y1="38" x2="48" y2="41" stroke="var(--accent)" stroke-width="1.8" opacity="0.3"/>
+            </svg>
+          </div>
+          <h2 class="empty-state__title">How can I help you?</h2>
+          <p class="empty-state__sub">Your local AI model is ready. Begin a conversation below.</p>
+          <div class="suggestion-chips" id="suggestionChips">
+            <button class="chip" data-prompt="Explain quantum computing in simple terms">Explain quantum computing</button>
+            <button class="chip" data-prompt="Write a Python function to sort a list of dictionaries by a key">Python sorting example</button>
+            <button class="chip" data-prompt="What are the best practices for REST API design?">REST API best practices</button>
+            <button class="chip" data-prompt="Summarize the key ideas behind transformer neural networks">Transformer networks</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Typing indicator -->
+      <div class="typing-wrapper" id="typingWrapper" aria-hidden="true" style="display:none;">
+        <div class="typing-indicator">
+          <div class="typing-indicator__avatar" aria-hidden="true">AI</div>
+          <div class="typing-indicator__dots">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Input bar -->
+      <div class="input-bar-wrapper">
+        <div class="input-bar" id="inputBar">
+          <button class="btn-attach" title="Attach file (coming soon)" disabled aria-label="Attach file">
+            <svg width="17" height="17" viewBox="0 0 18 18" fill="none">
+              <path d="M16.5 8.25L9 15.75a5.25 5.25 0 01-7.425-7.425L9 .75a3.5 3.5 0 014.95 4.95L7.5 12.15A1.75 1.75 0 015.025 9.675L11.25 3.5"
+                    stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+
+          <textarea
+            id="userInput"
+            class="input-bar__textarea"
+            placeholder="Ask anything…"
+            rows="1"
+            maxlength="4000"
+            aria-label="Chat message input"
+            autocomplete="off"
+            spellcheck="true"
+          ></textarea>
+
+          <button class="btn-send" id="btnSend" title="Send message" aria-label="Send message" disabled>
+            <svg class="icon-send" width="16" height="16" viewBox="0 0 20 20" fill="none">
+              <path d="M17.5 2.5L9.167 10.833" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M17.5 2.5L12.5 17.5L9.167 10.833L2.5 7.5L17.5 2.5Z" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+        <p class="input-bar__hint">Press <kbd>Enter</kbd> to send · <kbd>Shift+Enter</kbd> for new line</p>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

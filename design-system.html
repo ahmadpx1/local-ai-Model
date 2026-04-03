@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NeuralChat — Design System</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Outfit:wght@300;400;500;600;700&family=Fira+Code:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg:      #F5F2EC; --surface: #FDFBF7; --card: #FFFEF9;
+    --accent:  #4A6E5D; --accent-s: #EAF0EC;
+    --t1: #1A1714; --t2: #2C2926; --t3: #6B6054; --t4: #A89D92;
+    --border:  rgba(90,80,60,0.12);
+    --shadow:  0 2px 12px rgba(60,45,30,0.09);
+    --font-d: 'Cormorant Garamond', serif;
+    --font-u: 'Outfit', sans-serif;
+    --font-m: 'Fira Code', monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); font-family: var(--font-u); color: var(--t2); line-height: 1.65; -webkit-font-smoothing: antialiased; }
+  .page { max-width: 1100px; margin: 0 auto; padding: 48px 32px 80px; }
+  h1 { font-family: var(--font-d); font-size: 2.8rem; font-weight: 600; color: var(--t1); letter-spacing: -0.03em; margin-bottom: 6px; }
+  h2 { font-family: var(--font-d); font-size: 1.7rem; font-weight: 600; color: var(--t1); letter-spacing: -0.02em; margin: 48px 0 18px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+  h3 { font-family: var(--font-u); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--t4); margin: 24px 0 12px; }
+  p  { color: var(--t3); font-size: 0.9rem; line-height: 1.7; max-width: 680px; margin-bottom: 12px; }
+  pre, code { font-family: var(--font-m); }
+  pre { background: #1F1D1A; color: #D4CFCA; padding: 20px 24px; border-radius: 10px; font-size: 0.8rem; line-height: 1.7; overflow-x: auto; margin: 12px 0; }
+  code { font-size: 0.85em; background: var(--accent-s); border: 1px solid rgba(74,110,93,0.18); border-radius: 4px; padding: 1px 6px; color: var(--accent); }
+  .tag { display: inline-block; font-size: 0.68rem; font-weight: 600; background: var(--accent-s); color: var(--accent); border: 1px solid rgba(74,110,93,0.2); border-radius: 999px; padding: 2px 10px; letter-spacing: 0.04em; margin-bottom: 20px; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  @media(max-width:700px) { .grid-2,.grid-3,.grid-4 { grid-template-columns: 1fr 1fr; } }
+
+  /* Swatch */
+  .swatch { border-radius: 10px; overflow: hidden; box-shadow: var(--shadow); border: 1px solid var(--border); }
+  .swatch__color { height: 72px; }
+  .swatch__info  { background: var(--card); padding: 10px 12px; }
+  .swatch__name  { font-size: 0.78rem; font-weight: 600; color: var(--t2); display: block; }
+  .swatch__hex   { font-family: var(--font-m); font-size: 0.72rem; color: var(--t4); }
+  .swatch__use   { font-size: 0.7rem; color: var(--t4); margin-top: 2px; }
+
+  /* Card */
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 22px 24px; box-shadow: var(--shadow); }
+  .card h3 { margin-top: 0; }
+
+  /* Demo components */
+  .demo-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 32px; margin-top: 8px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .demo-chat  { display: flex; flex-direction: column; gap: 16px; padding: 24px; background: var(--surface); border-radius: 14px; border: 1px solid var(--border); }
+  .bubble-row { display: flex; align-items: flex-start; gap: 10px; }
+  .bubble-row.user { flex-direction: row-reverse; }
+  .avatar { width: 28px; height: 28px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; flex-shrink: 0; }
+  .avatar.ai   { background: var(--accent-s); border: 1.5px solid rgba(74,110,93,0.2); color: var(--accent); }
+  .avatar.you  { background: #4A6E5D; color: white; }
+  .bubble { padding: 11px 15px; border-radius: 16px; font-family: var(--font-m); font-size: 0.82rem; font-weight: 300; line-height: 1.75; max-width: 420px; }
+  .bubble.ai   { background: var(--card); border: 1px solid rgba(90,80,60,0.1); border-top-left-radius: 4px; box-shadow: 0 1px 4px rgba(60,45,30,0.07); color: var(--t2); }
+  .bubble.user { background: #4A6E5D; color: #FDFBF7; border-bottom-right-radius: 4px; box-shadow: 0 4px 12px rgba(74,110,93,0.28); }
+  .ts { font-size: 0.65rem; color: var(--t4); font-family: var(--font-m); margin-top: 3px; padding: 0 3px; }
+  .ts.r { text-align: right; }
+
+  /* Buttons */
+  .btn-primary { display: inline-flex; align-items: center; gap: 7px; background: var(--accent); color: white; border: none; border-radius: 10px; padding: 9px 18px; font-family: var(--font-u); font-size: 0.84rem; font-weight: 600; cursor: pointer; box-shadow: 0 2px 8px rgba(74,110,93,0.3); transition: all 0.13s; }
+  .btn-primary:hover { background: #3D5C4D; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(74,110,93,0.38); }
+  .btn-secondary { display: inline-flex; align-items: center; gap: 7px; background: var(--accent-s); color: var(--accent); border: 1.5px solid rgba(74,110,93,0.2); border-radius: 10px; padding: 9px 18px; font-family: var(--font-u); font-size: 0.84rem; font-weight: 600; cursor: pointer; transition: all 0.13s; }
+  .btn-secondary:hover { background: #DCE9E2; border-color: rgba(74,110,93,0.35); transform: translateY(-1px); }
+  .btn-ghost { display: inline-flex; align-items: center; gap: 7px; background: transparent; color: var(--t3); border: 1px solid var(--border); border-radius: 10px; padding: 9px 18px; font-family: var(--font-u); font-size: 0.84rem; font-weight: 500; cursor: pointer; transition: all 0.13s; }
+  .btn-ghost:hover { background: var(--accent-s); color: var(--accent); border-color: rgba(74,110,93,0.2); transform: translateY(-1px); }
+
+  /* Status badge */
+  .badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 11px; border-radius: 999px; font-size: 0.72rem; font-weight: 500; border: 1px solid var(--border); background: var(--card); color: var(--t3); }
+  .badge-dot { width: 6px; height: 6px; border-radius: 50%; }
+  .badge.ready  .badge-dot { background: #5A9E72; box-shadow: 0 0 0 2px rgba(90,158,114,0.2); }
+  .badge.error  .badge-dot { background: #B54530; }
+  .badge.thinking .badge-dot { background: var(--accent); animation: bdot 0.9s infinite; }
+  @keyframes bdot { 0%,100%{opacity:1}50%{opacity:0.4} }
+
+  /* Input demo */
+  .input-demo { display: flex; align-items: flex-end; gap: 8px; background: var(--card); border: 1.5px solid rgba(74,110,93,0.35); border-radius: 22px; padding: 10px 10px 10px 16px; box-shadow: 0 0 0 3px rgba(74,110,93,0.12), 0 2px 8px rgba(60,45,30,0.07); max-width: 520px; }
+  .input-demo textarea { flex:1; font-family: var(--font-m); font-size: 0.84rem; color: var(--t2); background: none; border: none; outline: none; resize: none; line-height: 1.6; min-height: 22px; }
+  .send-btn { width: 36px; height: 36px; background: var(--accent); border-radius: 9px; display: flex; align-items: center; justify-content: center; color: white; cursor: pointer; box-shadow: 0 2px 8px rgba(74,110,93,0.3); }
+
+  /* Shadow demos */
+  .shadow-demo { background: var(--card); border-radius: 12px; padding: 20px 18px; display: flex; flex-direction: column; gap: 6px; }
+  .shadow-demo .name { font-size: 0.75rem; font-weight: 600; color: var(--t3); }
+  .shadow-demo .val  { font-family: var(--font-m); font-size: 0.68rem; color: var(--t4); }
+
+  /* Radius demos */
+  .radius-row { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-end; }
+  .radius-demo { background: var(--accent-s); border: 1.5px solid rgba(74,110,93,0.2); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; padding: 16px 14px; }
+  .radius-demo .lbl { font-size: 0.7rem; color: var(--t4); font-family: var(--font-m); }
+
+  /* Typography samples */
+  .type-row { padding: 14px 18px; border-radius: 10px; background: var(--card); border: 1px solid var(--border); margin-bottom: 8px; }
+
+  /* Section divider */
+  .divider { height: 1px; background: var(--border); margin: 8px 0; }
+
+  /* Note */
+  .note { background: var(--accent-s); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 10px 14px; font-size: 0.82rem; color: var(--t3); margin: 12px 0; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="tag">Design System v2.0</div>
+  <h1>NeuralChat Design System</h1>
+  <p>A complete design language for a premium AI reading environment. Built on warmth, restraint, and editorial precision.</p>
+
+  <!-- ════════════════════════════════════════════════════════════
+       SECTION 1 — COLOR PALETTE
+       ════════════════════════════════════════════════════════════ -->
+  <h2>Color Palette</h2>
+  <p>The palette is anchored in warm ivory and muted sage teal. No saturated blues, no neon. Every color was chosen for eye comfort during long reading sessions.</p>
+
+  <h3>Backgrounds</h3>
+  <div class="grid-4">
+    <div class="swatch">
+      <div class="swatch__color" style="background:#F5F2EC;"></div>
+      <div class="swatch__info"><span class="swatch__name">Page</span><span class="swatch__hex">#F5F2EC</span><p class="swatch__use">Base canvas</p></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch__color" style="background:#FDFBF7;"></div>
+      <div class="swatch__info"><span class="swatch__name">Surface</span><span class="swatch__hex">#FDFBF7</span><p class="swatch__use">Sidebar, panels</p></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch__color" style="background:#FFFEF9;"></div>
+      <div class="swatch__info"><span class="swatch__name">Card</span><span class="swatch__hex">#FFFEF9</span><p class="swatch__use">Bubbles, input</p></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch__color" style="background:#F0EDE5;"></div>
+      <div class="swatch__info"><span class="swatch__name">Elevated</span><span class="swatch__hex">#F0EDE5</span><p class="swatch__use">Hover states</p></div>
+    </div>
+  </div>
+
+  <h3>Accent — Muted Sage Teal</h3>
+  <div class="grid-4">
+    <div class="swatch">
+      <div class="swatch__color" style="background:#4A6E5D;"></div>
+      <div class="swatch__info"><span class="swatch__name">Accent</span><span class="swatch__hex">#4A6E5D</span><p class="swatch__use">Buttons, links</p></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch__color" style="background:#3D5C4D;"></div>
+      <div class="swatch__info"><span class="swatch__name">Accent Hover</span><span class="swatch__hex">#3D5C4D</span><p class="swatch__use">Button hover</p></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch__color" style="background:#5E8573;"></div>
+      <div class="swatch__info"><span class="swatch__name">Accent Light</span><span class="swatch__hex">#5E8573</span><p class="swatch__use">Focus rings</p></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch__color" style="background:#EAF0EC;"></div>
+      <div class="swatch__info"><span class="swatch__name">Accent Soft</span><span class="swatch__hex">#EAF0EC</span><p class="swatch__use">Tinted bg</p></div>
+    </div>
+  </div>
+
+  <h3>Text — Warm Slate Scale</h3>
+  <div class="grid-4">
+    <div class="swatch">
+      <div class="swatch__color" style="background:#1A1714;"></div>
+      <div class="swatch__info"><span class="swatch__name" style="color:#F5F2EC;">Heading</span><span class="swatch__hex" style="color:#A89D92;">#1A1714</span><p class="swatch__use">Titles</p></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch__color" style="background:#2C2926;"></div>
+      <div class="swatch__info"><span class="swatch__name" style="color:#F5F2EC;">Primary</span><span class="swatch__hex" style="color:#A89D92;">#2C2926</span><p class="swatch__use">Body text</p></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch__color" style="background:#6B6054;"></div>
+      <div class="swatch__info"><span class="swatch__name">Secondary</span><span class="swatch__hex">#6B6054</span><p class="swatch__use">Labels, meta</p></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch__color" style="background:#A89D92;"></div>
+      <div class="swatch__info"><span class="swatch__name">Muted</span><span class="swatch__hex">#A89D92</span><p class="swatch__use">Timestamps</p></div>
+    </div>
+  </div>
+
+  <h3>Semantic</h3>
+  <div class="grid-4">
+    <div class="swatch">
+      <div class="swatch__color" style="background:#5A9E72;"></div>
+      <div class="swatch__info"><span class="swatch__name">Success</span><span class="swatch__hex">#5A9E72</span><p class="swatch__use">Ready dot</p></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch__color" style="background:#B54530;"></div>
+      <div class="swatch__info"><span class="swatch__name" style="color:#F5F2EC;">Error</span><span class="swatch__hex" style="color:#A89D92;">#B54530</span><p class="swatch__use">Error text</p></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch__color" style="background:#FDF3F1; border:1px solid #E8A898;"></div>
+      <div class="swatch__info"><span class="swatch__name">Error Bg</span><span class="swatch__hex">#FDF3F1</span><p class="swatch__use">Error bubble</p></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch__color" style="background:#E8A898;"></div>
+      <div class="swatch__info"><span class="swatch__name">Error Border</span><span class="swatch__hex">#E8A898</span><p class="swatch__use">Error ring</p></div>
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════════════════════════════════════
+       SECTION 2 — TYPOGRAPHY
+       ════════════════════════════════════════════════════════════ -->
+  <h2>Typography</h2>
+  <p>Three purposeful typefaces — each assigned a unique role. Never mix their roles.</p>
+
+  <div class="grid-3" style="margin-bottom:16px;">
+    <div class="card">
+      <h3>Display / Brand</h3>
+      <p style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:600;color:#1A1714;line-height:1.2;margin-bottom:8px;">Cormorant Garamond</p>
+      <p>Editorial serif. Used for brand name, page titles, empty state heading. Conveys warmth and intelligence.</p>
+    </div>
+    <div class="card">
+      <h3>UI Body</h3>
+      <p style="font-family:'Outfit',sans-serif;font-size:1.2rem;font-weight:500;color:#1A1714;line-height:1.3;margin-bottom:8px;">Outfit</p>
+      <p>Geometric, warm sans-serif. Used for all UI labels, buttons, sidebar items. Clean without feeling cold.</p>
+    </div>
+    <div class="card">
+      <h3>Chat / Code</h3>
+      <p style="font-family:'Fira Code',monospace;font-size:1rem;font-weight:400;color:#1A1714;line-height:1.4;margin-bottom:8px;">Fira Code</p>
+      <p>Readable mono with character. Used for all chat bubble text, code blocks, input field. Feels conversational.</p>
+    </div>
+  </div>
+
+  <h3>Type Scale</h3>
+  <div class="type-row"><span style="font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:600;color:#1A1714;letter-spacing:-0.03em;">How can I help you today?</span></div>
+  <div class="type-row"><span style="font-family:'Outfit',sans-serif;font-size:1.1rem;font-weight:600;color:#2C2926;">New Conversation</span></div>
+  <div class="type-row"><span style="font-family:'Outfit',sans-serif;font-size:0.9rem;font-weight:400;color:#6B6054;">Sidebar label, meta text, helper copy</span></div>
+  <div class="type-row"><span style="font-family:'Fira Code',monospace;font-size:0.84rem;font-weight:300;color:#2C2926;line-height:1.8;">This is how chat messages look. The monospace font gives every response a focused, document-like feel that's easy to read at length.</span></div>
+  <div class="type-row"><span style="font-family:'Fira Code',monospace;font-size:0.7rem;font-weight:400;color:#A89D92;">10:42 AM · timestamp</span></div>
+
+
+  <!-- ════════════════════════════════════════════════════════════
+       SECTION 3 — SHADOW SYSTEM
+       ════════════════════════════════════════════════════════════ -->
+  <h2>Shadow System</h2>
+  <p>All shadows use a warm sepia tone <code>rgba(60,45,30,…)</code> — NOT cold gray. This maintains the warm-paper feeling.</p>
+
+  <div class="grid-4">
+    <div class="shadow-demo" style="box-shadow:0 1px 2px rgba(60,45,30,0.06);">
+      <div class="name">shadow-xs</div>
+      <div class="val">Badges, small chips</div>
+    </div>
+    <div class="shadow-demo" style="box-shadow:0 1px 4px rgba(60,45,30,0.07),0 2px 8px rgba(60,45,30,0.05);">
+      <div class="name">shadow-sm</div>
+      <div class="val">AI bubbles, input bar</div>
+    </div>
+    <div class="shadow-demo" style="box-shadow:0 4px 12px rgba(60,45,30,0.09),0 1px 4px rgba(60,45,30,0.06);">
+      <div class="name">shadow-md</div>
+      <div class="val">Cards, hover state</div>
+    </div>
+    <div class="shadow-demo" style="box-shadow:0 8px 28px rgba(60,45,30,0.12),0 2px 8px rgba(60,45,30,0.07);">
+      <div class="name">shadow-lg</div>
+      <div class="val">Sidebars, modals</div>
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════════════════════════════════════
+       SECTION 4 — BORDER RADIUS
+       ════════════════════════════════════════════════════════════ -->
+  <h2>Border Radius System</h2>
+  <div class="radius-row">
+    <div class="radius-demo" style="border-radius:4px;width:60px;height:40px;"><div class="lbl">4px xs</div></div>
+    <div class="radius-demo" style="border-radius:7px;width:70px;height:46px;"><div class="lbl">7px sm</div></div>
+    <div class="radius-demo" style="border-radius:12px;width:80px;height:54px;"><div class="lbl">12px md</div></div>
+    <div class="radius-demo" style="border-radius:18px;width:90px;height:62px;"><div class="lbl">18px lg</div></div>
+    <div class="radius-demo" style="border-radius:24px;width:100px;height:70px;"><div class="lbl">24px xl</div></div>
+    <div class="radius-demo" style="border-radius:32px;width:110px;height:78px;"><div class="lbl">32px 2xl</div></div>
+    <div class="radius-demo" style="border-radius:999px;width:80px;height:36px;"><div class="lbl">full</div></div>
+  </div>
+
+
+  <!-- ════════════════════════════════════════════════════════════
+       SECTION 5 — UI COMPONENTS SHOWCASE
+       ════════════════════════════════════════════════════════════ -->
+  <h2>UI Components</h2>
+
+  <h3>Buttons</h3>
+  <div class="demo-wrap">
+    <button class="btn-primary">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 1v14M1 8h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+      New Chat
+    </button>
+    <button class="btn-secondary">Send Message</button>
+    <button class="btn-ghost">Cancel</button>
+    <button class="btn-primary" disabled style="opacity:0.4;cursor:not-allowed;">Disabled</button>
+  </div>
+
+  <h3>Status Badges</h3>
+  <div class="demo-wrap">
+    <div class="badge ready"><div class="badge-dot"></div> Ready</div>
+    <div class="badge thinking"><div class="badge-dot"></div> Thinking…</div>
+    <div class="badge error"><div class="badge-dot"></div> Disconnected</div>
+  </div>
+
+  <h3>Input Bar (focused state)</h3>
+  <div class="demo-wrap">
+    <div class="input-demo">
+      <textarea rows="1" placeholder="Ask anything…"></textarea>
+      <div class="send-btn">
+        <svg width="15" height="15" viewBox="0 0 20 20" fill="none"><path d="M17.5 2.5L9.167 10.833" stroke="white" stroke-width="2.2" stroke-linecap="round"/><path d="M17.5 2.5L12.5 17.5L9.167 10.833L2.5 7.5L17.5 2.5Z" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <h3>Chat Bubbles</h3>
+  <div class="demo-chat">
+    <div class="bubble-row">
+      <div class="avatar ai">AI</div>
+      <div>
+        <div style="font-size:0.7rem;font-weight:700;letter-spacing:0.09em;text-transform:uppercase;color:#4A6E5D;margin-bottom:5px;font-family:'Outfit',sans-serif;">NeuralChat</div>
+        <div class="bubble ai">Hello! I'm your local AI assistant. How can I help you today? I can answer questions, write code, explain concepts, or just have a conversation.</div>
+        <div class="ts">10:41 AM</div>
+      </div>
+    </div>
+    <div class="bubble-row user">
+      <div class="avatar you">You</div>
+      <div style="align-items:flex-end;display:flex;flex-direction:column;">
+        <div class="bubble user">Can you explain how transformers work in machine learning?</div>
+        <div class="ts r">10:42 AM</div>
+      </div>
+    </div>
+    <div class="bubble-row">
+      <div class="avatar ai">AI</div>
+      <div>
+        <div style="font-size:0.7rem;font-weight:700;letter-spacing:0.09em;text-transform:uppercase;color:#4A6E5D;margin-bottom:5px;font-family:'Outfit',sans-serif;">NeuralChat</div>
+        <div class="bubble ai">Transformers are a neural network architecture that uses <strong>self-attention</strong> to process sequences. Unlike RNNs, they handle all positions simultaneously, enabling parallel processing and better long-range dependencies.</div>
+        <div class="ts">10:42 AM</div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════════════════════════════════════
+       SECTION 6 — TAILWIND CONFIG
+       ════════════════════════════════════════════════════════════ -->
+  <h2>Tailwind CSS Configuration</h2>
+  <div class="note">Use this if you ever migrate to a Tailwind project. Perfectly mirrors the CSS variable system above.</div>
+<pre>// tailwind.config.js
+module.exports = {
+  content: ["./src/**/*.{html,js,jsx,tsx}"],
+  theme: {
+    extend: {
+      colors: {
+        // ── Backgrounds ──────────────────────────────────────
+        page:      "#F5F2EC",
+        surface:   "#FDFBF7",
+        card:      "#FFFEF9",
+        elevated:  "#F0EDE5",
+
+        // ── Accent (muted sage teal) ──────────────────────────
+        accent: {
+          DEFAULT: "#4A6E5D",
+          hover:   "#3D5C4D",
+          light:   "#5E8573",
+          soft:    "#EAF0EC",
+        },
+
+        // ── Text (warm slate) ─────────────────────────────────
+        ink: {
+          heading:   "#1A1714",
+          primary:   "#2C2926",
+          secondary: "#6B6054",
+          muted:     "#A89D92",
+          disabled:  "#C8BFB5",
+        },
+
+        // ── Semantic ──────────────────────────────────────────
+        success: "#5A9E72",
+        danger: {
+          DEFAULT: "#B54530",
+          bg:      "#FDF3F1",
+          border:  "#E8A898",
+        },
+      },
+
+      fontFamily: {
+        display: ["'Cormorant Garamond'", "Georgia", "serif"],
+        ui:      ["'Outfit'", "system-ui", "sans-serif"],
+        mono:    ["'Fira Code'", "'Menlo'", "monospace"],
+      },
+
+      fontSize: {
+        "2xs": ["0.694rem",  { lineHeight: "1.4" }],
+        xs:    ["0.833rem",  { lineHeight: "1.5" }],
+        sm:    ["0.9375rem", { lineHeight: "1.65" }],
+        base:  ["1rem",      { lineHeight: "1.65" }],
+        lg:    ["1.2rem",    { lineHeight: "1.4" }],
+        xl:    ["1.44rem",   { lineHeight: "1.3" }],
+        "2xl": ["1.728rem",  { lineHeight: "1.2" }],
+      },
+
+      borderRadius: {
+        xs:   "4px",
+        sm:   "7px",
+        md:   "12px",
+        lg:   "18px",
+        xl:   "24px",
+        "2xl":"32px",
+      },
+
+      boxShadow: {
+        xs:    "0 1px 2px rgba(60,45,30,0.06)",
+        sm:    "0 1px 4px rgba(60,45,30,0.07), 0 2px 8px rgba(60,45,30,0.05)",
+        md:    "0 4px 12px rgba(60,45,30,0.09), 0 1px 4px rgba(60,45,30,0.06)",
+        lg:    "0 8px 28px rgba(60,45,30,0.12), 0 2px 8px rgba(60,45,30,0.07)",
+        xl:    "0 16px 48px rgba(60,45,30,0.14), 0 4px 12px rgba(60,45,30,0.08)",
+        "btn": "0 2px 8px rgba(74,110,93,0.28)",
+        "btn-hover": "0 4px 16px rgba(74,110,93,0.38)",
+        "focus-ring": "0 0 0 3px rgba(74,110,93,0.16)",
+      },
+
+      transitionTimingFunction: {
+        "ease-out":    "cubic-bezier(0.16, 1, 0.3, 1)",
+        "ease-spring": "cubic-bezier(0.34, 1.56, 0.64, 1)",
+        "ease-smooth": "cubic-bezier(0.4, 0, 0.2, 1)",
+      },
+    },
+  },
+};</pre>
+
+
+  <!-- ════════════════════════════════════════════════════════════
+       SECTION 7 — REACT COMPONENTS
+       ════════════════════════════════════════════════════════════ -->
+  <h2>React Component Examples</h2>
+
+  <h3>Chat Bubble Component</h3>
+<pre>// components/ChatBubble.jsx
+import { useState } from "react";
+
+export function ChatBubble({ role, content, time }) {
+  const isUser = role === "user";
+  const isError = role === "error";
+
+  return (
+    &lt;div className={`flex flex-col gap-1 px-7 max-w-3xl mx-auto w-full
+      animate-[fadeUp_240ms_ease-out_both]
+      ${isUser ? "items-end" : "items-start"}`}
+    &gt;
+      {/* AI header */}
+      {!isUser &amp;&amp; !isError &amp;&amp; (
+        &lt;div className="flex items-center gap-2 mb-1"&gt;
+          &lt;div className="w-7 h-7 rounded-sm bg-accent-soft border border-accent-border
+                          flex items-center justify-center
+                          text-[9px] font-bold text-accent tracking-wide"&gt;
+            AI
+          &lt;/div&gt;
+          &lt;span className="text-2xs font-bold uppercase tracking-widest text-accent"&gt;
+            NeuralChat
+          &lt;/span&gt;
+        &lt;/div&gt;
+      )}
+
+      {/* Bubble */}
+      &lt;div className={`
+        px-4 py-3 rounded-[18px] max-w-[85%] font-mono text-xs font-light
+        leading-relaxed word-break transition-all duration-150
+        hover:-translate-y-px hover:shadow-md
+        ${isUser
+          ? "bg-accent text-white rounded-br-xs shadow-btn"
+          : isError
+          ? "bg-danger-bg border border-danger-border text-danger rounded-tl-xs shadow-sm"
+          : "bg-card border border-[rgba(90,80,60,0.12)] text-ink-primary rounded-tl-xs shadow-sm"
+        }
+      `}&gt;
+        {isError &amp;&amp; &lt;span&gt;⚠ &lt;/span&gt;}
+        {content}
+      &lt;/div&gt;
+
+      &lt;span className="text-[0.67rem] text-ink-disabled font-mono px-1"&gt;
+        {time}
+      &lt;/span&gt;
+    &lt;/div&gt;
+  );
+}</pre>
+
+  <h3>Send Button Component</h3>
+<pre>// components/SendButton.jsx
+export function SendButton({ disabled, onClick }) {
+  return (
+    &lt;button
+      onClick={onClick}
+      disabled={disabled}
+      className={`
+        flex items-center justify-center w-9 h-9 rounded-md
+        transition-all duration-130 ease-smooth
+        ${disabled
+          ? "bg-accent-light opacity-40 cursor-not-allowed shadow-none"
+          : "bg-accent text-white shadow-btn hover:bg-accent-hover hover:shadow-btn-hover hover:-translate-y-px hover:scale-105 active:scale-97 active:translate-y-0"
+        }
+      `}
+      aria-label="Send message"
+    &gt;
+      &lt;SendIcon className="w-4 h-4" /&gt;
+    &lt;/button&gt;
+  );
+}</pre>
+
+  <h3>Input Bar Component</h3>
+<pre>// components/InputBar.jsx
+export function InputBar({ onSend, disabled }) {
+  const [value, setValue] = useState("");
+
+  return (
+    &lt;div className="px-7 py-3 pb-5 bg-surface/90 backdrop-blur-sm border-t border-[rgba(90,80,60,0.1)]"&gt;
+      &lt;div className={`
+        flex items-end gap-2 bg-card border-[1.5px] rounded-[24px]
+        px-4 py-2.5 max-w-3xl mx-auto transition-all duration-240
+        ${value
+          ? "border-accent-light shadow-focus-ring shadow-sm"
+          : "border-[rgba(90,80,60,0.16)] shadow-sm"
+        }
+      `}&gt;
+        &lt;textarea
+          value={value}
+          onChange={(e) =&gt; setValue(e.target.value)}
+          placeholder="Ask anything…"
+          rows={1}
+          className="flex-1 font-mono text-[13px] font-light text-ink-primary
+                     bg-transparent border-none outline-none resize-none
+                     leading-relaxed min-h-[22px] max-h-[200px] caret-accent"
+        /&gt;
+        &lt;SendButton disabled={!value.trim() || disabled} onClick={() =&gt; { onSend(value); setValue(""); }} /&gt;
+      &lt;/div&gt;
+      &lt;p className="text-center text-[0.67rem] text-ink-disabled font-mono mt-2"&gt;
+        Press &lt;kbd&gt;Enter&lt;/kbd&gt; to send · &lt;kbd&gt;Shift+Enter&lt;/kbd&gt; for new line
+      &lt;/p&gt;
+    &lt;/div&gt;
+  );
+}</pre>
+
+  <h3>Sidebar History Item</h3>
+<pre>// components/SidebarItem.jsx
+export function SidebarItem({ session, isActive, onSelect, onRename, onDelete }) {
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    &lt;li
+      onClick={() =&gt; onSelect(session.id)}
+      onMouseEnter={() =&gt; setHovered(true)}
+      onMouseLeave={() =&gt; setHovered(false)}
+      className={`
+        flex items-center gap-2 px-2.5 py-2 rounded-sm cursor-pointer
+        border transition-all duration-130 min-h-[36px] select-none
+        ${isActive
+          ? "bg-accent-soft text-accent border-accent-border translate-x-0.5"
+          : "text-ink-secondary border-transparent hover:bg-[rgba(90,80,60,0.055)] hover:text-ink-primary hover:border-[rgba(90,80,60,0.1)] hover:translate-x-0.5"
+        }
+      `}
+    &gt;
+      &lt;ChatIcon className="w-3.5 h-3.5 opacity-40 shrink-0" /&gt;
+      &lt;span className="flex-1 truncate text-[13px]"&gt;{session.label}&lt;/span&gt;
+
+      {/* Action buttons — appear on hover */}
+      {(hovered || isActive) &amp;&amp; (
+        &lt;div className="flex gap-0.5"&gt;
+          &lt;ActionButton onClick={(e) =&gt; { e.stopPropagation(); onRename(session.id); }} icon="edit" /&gt;
+          &lt;ActionButton onClick={(e) =&gt; { e.stopPropagation(); onDelete(session.id); }} icon="trash" danger /&gt;
+        &lt;/div&gt;
+      )}
+    &lt;/li&gt;
+  );
+}</pre>
+
+
+  <!-- ════════════════════════════════════════════════════════════
+       SECTION 8 — CSS FLOATING WATERMARKS
+       ════════════════════════════════════════════════════════════ -->
+  <h2>Watermark Background System</h2>
+  <div class="note">All watermark icons share the same base rules. Only position and timing differ. Opacity is capped at 6% — critical for readability.</div>
+<pre>/* ── Watermark base ────────────────────────────── */
+.watermark-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;     /* never blocks clicks */
+  z-index: 0;
+  overflow: hidden;
+}
+
+.wm-icon {
+  position: absolute;
+  color: #4A6E5D;           /* matches accent */
+  filter: blur(0.6px);      /* ultra-subtle softness */
+  will-change: transform;   /* GPU layer for smooth animation */
+}
+
+/* ── Placement & opacity per icon ─────────────── */
+.wm-icon--brain    { opacity: 0.055; top:  5%; left:  2%;  animation: wm-drift-a 28s ease-in-out infinite; }
+.wm-icon--search   { opacity: 0.06;  top: 12%; right: 5%;  animation: wm-drift-b 22s ease-in-out infinite; animation-delay: -6s; }
+.wm-icon--circuit  { opacity: 0.05;  top: 55%; left:  3%;  animation: wm-drift-c 32s ease-in-out infinite; animation-delay: -12s; }
+.wm-icon--chat     { opacity: 0.055; top: 70%; right: 4%;  animation: wm-drift-a 26s ease-in-out infinite; animation-delay: -4s; }
+.wm-icon--infinity { opacity: 0.05;  top: 38%; right: 2%;  animation: wm-drift-b 30s ease-in-out infinite; animation-delay: -9s; }
+.wm-icon--doc      { opacity: 0.045; bottom: 8%; left: 8%; animation: wm-drift-c 24s ease-in-out infinite; animation-delay: -15s; }
+.wm-icon--stars    { opacity: 0.06;  bottom:15%; right:8%; animation: wm-drift-a 20s ease-in-out infinite; animation-delay: -3s; }
+
+/* ── Drift keyframes — slow, natural, non-distracting ── */
+@keyframes wm-drift-a {
+  0%, 100% { transform: translate(0px,   0px)  rotate(0deg);  }
+  33%       { transform: translate(8px,  -12px) rotate(3deg);  }
+  66%       { transform: translate(-6px,  8px)  rotate(-2deg); }
+}
+@keyframes wm-drift-b {
+  0%, 100% { transform: translate(0px,   0px)  rotate(0deg);  }
+  40%       { transform: translate(-10px, 10px) rotate(-4deg); }
+  70%       { transform: translate(7px,  -6px)  rotate(2deg);  }
+}
+@keyframes wm-drift-c {
+  0%, 100% { transform: translate(0px, 0px)   rotate(0deg); }
+  50%       { transform: translate(6px, 14px)  rotate(5deg); }
+}</pre>
+
+
+  <!-- ════════════════════════════════════════════════════════════
+       SECTION 9 — MICRO-INTERACTIONS REFERENCE
+       ════════════════════════════════════════════════════════════ -->
+  <h2>Micro-Interaction Patterns</h2>
+  <div class="grid-2">
+    <div class="card">
+      <h3>Hover Lift</h3>
+      <p>Elements lift <code>translateY(-1px)</code> or <code>translateY(-2px)</code> on hover. Combined with increased shadow. Creates a sense of physicality.</p>
+<pre style="font-size:0.74rem;padding:12px 14px;margin-top:10px;">transition: transform 130ms ease-out,
+            box-shadow 130ms ease-out;
+
+&:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}</pre>
+    </div>
+    <div class="card">
+      <h3>Button Glow</h3>
+      <p>Primary buttons increase their warm box-shadow on hover. Glow uses the accent color at 38% opacity — never harsh.</p>
+<pre style="font-size:0.74rem;padding:12px 14px;margin-top:10px;">.btn-primary:hover {
+  box-shadow:
+    0 4px 16px rgba(74,110,93,0.38);
+  transform: translateY(-1px);
+}</pre>
+    </div>
+    <div class="card">
+      <h3>Message Fade-In</h3>
+      <p>New messages enter with a smooth <code>fadeUp</code> — opacity 0→1 and translateY 8px→0. Duration 240ms. No bounce.</p>
+<pre style="font-size:0.74rem;padding:12px 14px;margin-top:10px;">@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.message-group {
+  animation: fade-up 240ms
+    cubic-bezier(0.16,1,0.3,1) both;
+}</pre>
+    </div>
+    <div class="card">
+      <h3>Focus Ring</h3>
+      <p>Override the default browser blue. Use the muted accent at 16% opacity for a calm, accessible focus indicator.</p>
+<pre style="font-size:0.74rem;padding:12px 14px;margin-top:10px;">:focus-visible {
+  outline: 2px solid #5E8573;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Input bar specific */
+.input-bar:focus-within {
+  border-color: #5E8573;
+  box-shadow:
+    0 0 0 3px rgba(74,110,93,0.16),
+    0 2px 8px rgba(60,45,30,0.07);
+}</pre>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════
+       SECTION 10 — DESIGN REASONING
+       ════════════════════════════════════════════════════════════ -->
+  <h2>Design Reasoning</h2>
+  <div class="grid-2">
+    <div class="card">
+      <h3>Why Warm Ivory?</h3>
+      <p>Pure white (#FFFFFF) creates harsh contrast that causes eye fatigue in long reading sessions. Warm ivory (#F5F2EC) reduces the effective contrast ratio by ~15% while maintaining WCAG AA compliance. Users can stay focused longer.</p>
+    </div>
+    <div class="card">
+      <h3>Why Sage Teal (not Blue)?</h3>
+      <p>Every AI product uses blue/purple. Sage teal (#4A6E5D) is calm, warm, and distinctive. It reads as "intelligent" without the cold tech-startup feel. It also harmonizes naturally with the warm ivory base.</p>
+    </div>
+    <div class="card">
+      <h3>Why Cormorant Garamond?</h3>
+      <p>Most SaaS products use Inter or Roboto. Cormorant Garamond is a classical serif — it signals depth, expertise, and permanence. Used only for the brand and hero headings, it creates editorial contrast with the clean Outfit body font.</p>
+    </div>
+    <div class="card">
+      <h3>Why Warm Sepia Shadows?</h3>
+      <p>Standard box shadows use rgba(0,0,0,…) — pure black — which reads as cold and flat on warm backgrounds. Sepia-toned shadows rgba(60,45,30,…) integrate naturally with the warm palette, creating depth that feels cohesive, not pasted-on.</p>
+    </div>
+  </div>
+
+  <div style="height:40px;"></div>
+  <div style="text-align:center;font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:#A89D92;">NeuralChat Design System · Warm Parchment Editorial · v2.0</div>
+
+</div>
+</body>
+</html>
